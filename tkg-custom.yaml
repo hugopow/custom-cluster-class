@@ -1,0 +1,82 @@
+#! ---------------------------------------------------------------------
+#! Basic cluster creation configuration
+#! ---------------------------------------------------------------------
+#ALLOW_LEGACY_CLUSTER: false
+INFRASTRUCTURE_PROVIDER: vsphere
+#CLUSTER_NAME: tkg-workload1
+CLUSTER_PLAN: dev
+NAMESPACE: default
+# CLUSTER_API_SERVER_PORT: # For deployments without NSX Advanced Load Balancer
+CNI: antrea
+ENABLE_DEFAULT_STORAGE_CLASS: false
+#AVI_LABELS: '{"nsx-alb-cluster-ip-l7":"true", "enable-nsx-alb":"true"}'
+
+
+# TKG 2.3 only
+# VSPHERE_AZ_CONTROL_PLANE_MATCHING_LABELS: "key=value"
+
+
+#! ---------------------------------------------------------------------
+#! Node configuration
+#! ---------------------------------------------------------------------
+
+# SIZE:
+CONTROLPLANE_SIZE: small
+WORKER_SIZE: small
+
+# VSPHERE_NUM_CPUS: 2
+# VSPHERE_DISK_GIB: 40
+# VSPHERE_MEM_MIB: 4096
+
+# VSPHERE_CONTROL_PLANE_NUM_CPUS: 2
+# VSPHERE_CONTROL_PLANE_DISK_GIB: 40
+# VSPHERE_CONTROL_PLANE_MEM_MIB: 8192
+# VSPHERE_WORKER_NUM_CPUS: 2
+# VSPHERE_WORKER_DISK_GIB: 40
+# VSPHERE_WORKER_MEM_MIB: 4096
+
+#CONTROL_PLANE_MACHINE_COUNT: 1
+WORKER_MACHINE_COUNT: 1
+# WORKER_MACHINE_COUNT_0: 2
+# WORKER_MACHINE_COUNT_1: 2
+# WORKER_MACHINE_COUNT_2: 1
+
+#! ---------------------------------------------------------------------
+#! vSphere configuration
+#! ---------------------------------------------------------------------
+
+#VSPHERE_CLONE_MODE: "fullClone"
+VSPHERE_NETWORK: tkg-workload
+# VSPHERE_TEMPLATE:
+# VSPHERE_TEMPLATE_MOID:
+# IS_WINDOWS_WORKLOAD_CLUSTER: false
+# VIP_NETWORK_INTERFACE: "eth0"
+VSPHERE_SSH_AUTHORIZED_KEY: ssh-rsa 
+VSPHERE_USERNAME: administrator@vsphere.local
+VSPHERE_PASSWORD: Vmware1!
+#VSPHERE_REGION: k8s-region
+#VSPHERE_ZONE: k8s-zone
+#VSPHERE_AZ_0: az-1
+#VSPHERE_AZ_1: az-2
+#VSPHERE_AZ_2: az-3
+#USE_TOPOLOGY_CATEGORIES: true
+VSPHERE_SERVER: vcenter.vmwire.com
+VSPHERE_DATACENTER: home.local
+VSPHERE_RESOURCE_POOL: tkg-vsphere-tkg-Mgmt
+VSPHERE_DATASTORE: lun01
+VSPHERE_FOLDER: tkg-vsphere-workload
+# VSPHERE_STORAGE_POLICY_ID
+# VSPHERE_WORKER_PCI_DEVICES:
+# VSPHERE_CONTROL_PLANE_PCI_DEVICES:
+# VSPHERE_IGNORE_PCI_DEVICES_ALLOW_LIST:
+VSPHERE_CONTROL_PLANE_CUSTOM_VMX_KEYS: 'ethernet0.ctxPerDev=3,ethernet0.pnicFeatures=4,sched.cpu.shares=high'
+VSPHERE_WORKER_CUSTOM_VMX_KEYS: 'ethernet0.ctxPerDev=3,ethernet0.pnicFeatures=4,sched.cpu.shares=high'
+# WORKER_ROLLOUT_STRATEGY: "RollingUpdate"
+# VSPHERE_CONTROL_PLANE_HARDWARE_VERSION:
+# VSPHERE_WORKER_HARDWARE_VERSION:
+VSPHERE_TLS_THUMBPRINT: 
+VSPHERE_INSECURE: false
+# VSPHERE_CONTROL_PLANE_ENDPOINT: # Required for Kube-Vip
+# VSPHERE_CONTROL_PLANE_ENDPOINT_PORT: 6443
+# VSPHERE_ADDITIONAL_FQDN:
+AVI_CONTROL_PLANE_HA_PROVIDER: true
