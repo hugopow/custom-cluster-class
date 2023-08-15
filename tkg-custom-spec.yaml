@@ -1,0 +1,164 @@
+apiVersion: csi.tanzu.vmware.com/v1alpha1
+kind: VSphereCSIConfig
+metadata:
+  name: tkg-custom
+  namespace: default
+spec:
+  vsphereCSI:
+    config:
+      datacenter: /home.local
+      httpProxy: ""
+      httpsProxy: ""
+      insecureFlag: false
+      noProxy: ""
+      region: null
+      tlsThumbprint: 
+      useTopologyCategories: false
+      zone: null
+    mode: vsphereCSI
+---
+apiVersion: run.tanzu.vmware.com/v1alpha3
+kind: ClusterBootstrap
+metadata:
+  annotations:
+    tkg.tanzu.vmware.com/add-missing-fields-from-tkr: v1.26.5---vmware.2-tkg.1-rc.3
+  name: tkg-custom
+  namespace: default
+spec:
+  additionalPackages:
+  - refName: metrics-server*
+  - refName: secretgen-controller*
+  - refName: pinniped*
+  - refName: tkg-storageclass*
+    valuesFrom:
+      inline:
+        infraProvider: ""
+  csi:
+    refName: vsphere-csi*
+    valuesFrom:
+      providerRef:
+        apiGroup: csi.tanzu.vmware.com
+        kind: VSphereCSIConfig
+        name: tkg-custom
+  kapp:
+    refName: kapp-controller*
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tkg-custom
+  namespace: default
+stringData:
+  password: Vmware1!
+  username: administrator@vsphere.local
+---
+apiVersion: cluster.x-k8s.io/v1beta1
+kind: Cluster
+metadata:
+  annotations:
+    osInfo: photon,3,
+    tkg/plan: dev
+  labels:
+    tkg.tanzu.vmware.com/cluster-name: tkg-custom
+  name: tkg-custom
+  namespace: default
+spec:
+  clusterNetwork:
+    pods:
+      cidrBlocks:
+      - 100.96.0.0/11
+    services:
+      cidrBlocks:
+      - 100.64.0.0/13
+  topology:
+    class: tkg-vsphere-default-v1.1.0-extended
+    controlPlane:
+      metadata:
+        annotations:
+          run.tanzu.vmware.com/resolve-os-image: image-type=ova,os-name=photon
+      replicas: 1
+    variables:
+    - name: cni
+      value: antrea
+    - name: controlPlaneCertificateRotation
+      value:
+        activate: true
+        daysBefore: 90
+    - name: additionalImageRegistries
+      value:
+      - caCert: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUU1VENDQTgyZ0F3SUJBZ0lTQTFseHdSM3pTTGxjZFpBRVdSTjNSZjdOTUEwR0NTcUdTSWIzRFFFQkN3VUEKTURJeEN6QUpCZ05WQkFZVEFsVlRNUll3RkFZRFZRUUtFdzFNWlhRbmN5QkZibU55ZVhCME1Rc3dDUVlEVlFRRApFd0pTTXpBZUZ3MHlNekEzTURZd09ETXlORGxhRncweU16RXdNRFF3T0RNeU5EaGFNQmN4RlRBVEJnTlZCQU1NCkRDb3VkbTEzYVhKbExtTnZiVENDQVNJd0RRWUpLb1pJaHZjTkFRRUJCUUFEZ2dFUEFEQ0NBUW9DZ2dFQkFLZGgKN1FKeUFnUHdiT3VNSFdBM2c1c2RhOU9hZXVHTG1oNnJhQlpMWjFKMUwrZzdlaHdrM0dnQjhmQVN4bXFsQUg0TgpSeFVYdTZXbTBQUGpQOEMyMFZHZkdHN0krVUFISWh1aGdTcEFscTVMZkRTWDFDd21YZEw4Z1ZiMHFhdHpsNjZ2CmpaVG05TmxnYU8vYTd4RC82SENnMDdUUTdZZmg3djRLdGZLNFIyQWc1V2pPeXhkVTBvc3JZK3Mva01reWN5a0cKQTE1UGhHOGc4V2tDRnpmNkw5UUZ6RGxkU1g5bmE3amxjTE1JbDRGVnBLQkg3TWxtUWhNOXVyajNTNjlTMUJ4bgp6SzBZaitJSUtScG9nRHlTUXFDSEloenAxZzFOVWl5MVhacGNVdSt4eFBWU3UwZVVCNzFGZzlNMzVBdUlDOHdzCnFuMW56VUxqMlpQOUR1MS9hQ2NDQXdFQUFhT0NBZzR3Z2dJS01BNEdBMVVkRHdFQi93UUVBd0lGb0RBZEJnTlYKSFNVRUZqQVVCZ2dyQmdFRkJRY0RBUVlJS3dZQkJRVUhBd0l3REFZRFZSMFRBUUgvQkFJd0FEQWRCZ05WSFE0RQpGZ1FVMWc3LytIOXUvS1BCajEyamlCeUZiRDdQM2Rzd0h3WURWUjBqQkJnd0ZvQVVGQzZ6RjdkWVZzdXVVQWxBCjVoK3ZuWXNVd3NZd1ZRWUlLd1lCQlFVSEFRRUVTVEJITUNFR0NDc0dBUVVGQnpBQmhoVm9kSFJ3T2k4dmNqTXUKYnk1c1pXNWpjaTV2Y21jd0lnWUlLd1lCQlFVSE1BS0dGbWgwZEhBNkx5OXlNeTVwTG14bGJtTnlMbTl5Wnk4dwpGd1lEVlIwUkJCQXdEb0lNS2k1MmJYZHBjbVV1WTI5dE1CTUdBMVVkSUFRTU1Bb3dDQVlHWjRFTUFRSUJNSUlCCkJBWUtLd1lCQkFIV2VRSUVBZ1NCOVFTQjhnRHdBSFlBZWpLTVZOaTNMYllnNmpqZ1VoN3BoQlp3TWhPRlRUdlMKSzhFNlY2TlM2MUlBQUFHSktvd1BhUUFBQkFNQVJ6QkZBaUVBaWFSLzE3WDdKblMzUTI1Q3JNTHRnUU95bzRtOApiMlRwbEN1dm9pN0xCMG9DSUdxYncvTzhTSGRmeisxcEYwengxWm9OTWsvaXFJaXppanBpS01nQUNQdkRBSFlBCjZEN1EyajcxQmpVeTUxY292SWxyeVFQVHk5RVJhK3pyYWVGM2ZXMEd2VzRBQUFHSktvd1BVd0FBQkFNQVJ6QkYKQWlBWnVNSFJOelpPcmtpVVRnUllrOXV1V3hhNUFRcXg2cEdCMWtPUVpISCtQZ0loQU1hMXI0RE14ME1MMUt0bAp2NzdveEpKd2doYlFmVklCTkpIMTdQNTdxZUcxTUEwR0NTcUdTSWIzRFFFQkN3VUFBNElCQVFDWDhrWnFLOU8yCjVRclB2K2Nzc21nNlJMc0tiKy9LWFZjSnQ2SlpPSWhMcUlVaUtWK01aZjVhd3lLRlByc1A5MWk3bGZnZ21ESHYKaVlqVmVoZGF4eXdVMkdYdFZpNENZQy85SHZBRDhGYUY2amRoNCtKbGZ4MFdCN3huSW5MUVZUSXR5N0xYYWxyVAp3TWk1MjlQaWY3NmZuZFZ0Qmc3RHZjVWlCTWhIZGdKVFl4cWtSUlZRK1ZEZVB3QXh1cXB4R0dXZGlpZE9aaGY0CnZBUkwvYkVraVVwUFcvRWhoTDluUFhEcjdOSURGSWNZV0RUeGNTMkdnWWZRQ1R6RHlOVFU4NlY5cXFKVmxWRWsKU2hwVW84SElsMXVMK3JDUmlpa2FuVm5XZTkvUjI4VXhJeDZZYUVGdUZVMU5DRlZwdFVpd2ZSOVJIT2hMUVdocwpSUWR5QU5uOXc4WDcKLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQ==
+        host: harbor.vmwire.com
+        skipTlsVerify: false
+    - name: auditLogging
+      value:
+        enabled: false
+    - name: podSecurityStandard
+      value:
+        audit: restricted
+        deactivated: false
+        warn: restricted
+    - name: aviAPIServerHAProvider
+      value: true
+    - name: vcenter
+      value:
+        cloneMode: fullClone
+        datacenter: /home.local
+        datastore: /home.local/datastore/lun01
+        folder: /home.local/vm/tkg-vsphere-workload
+        network: /home.local/network/tkg-workload
+        resourcePool: /home.local/host/Management/Resources/tkg-vsphere-tkg-Mgmt
+        server: vcenter.vmwire.com
+        storagePolicyID: ""
+        tlsThumbprint: 
+    - name: user
+      value:
+        sshAuthorizedKeys:
+        - ssh-rsa 
+    - name: controlPlane
+      value:
+        machine:
+          customVMXKeys:
+            ethernet0.ctxPerDev: "3"
+            ethernet0.pnicFeatures: "4"
+            sched.cpu.shares: high
+          diskGiB: 20
+          memoryMiB: 4096
+          numCPUs: 2
+    - name: worker
+      value:
+        machine:
+          customVMXKeys:
+            ethernet0.ctxPerDev: "3"
+            ethernet0.pnicFeatures: "4"
+            sched.cpu.shares: high
+          diskGiB: 20
+          memoryMiB: 4096
+          numCPUs: 2
+    - name: security
+      value:
+        fileIntegrityMonitoring:
+          enabled: false
+        imagePolicy:
+          pullAlways: false
+          webhook:
+            enabled: false
+            spec:
+              allowTTL: 50
+              defaultAllow: true
+              denyTTL: 60
+              retryBackoff: 500
+        kubeletOptions:
+          eventQPS: 50
+          streamConnectionIdleTimeout: 4h0m0s
+        systemCryptoPolicy: default
+    version: v1.26.5+vmware.2-tkg.1-rc.3
+    workers:
+      machineDeployments:
+      - class: tkg-worker
+        metadata:
+          annotations:
+            run.tanzu.vmware.com/resolve-os-image: image-type=ova,os-name=photon
+        name: md-0
+        replicas: 1
+        strategy:
+          type: RollingUpdate
