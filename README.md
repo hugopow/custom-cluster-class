@@ -1,5 +1,5 @@
 # custom-cluster-class
-Custom Cluster Class for TKG Kubernetes Clusters to configure preKubeadmcommands
+Custom Cluster Class for TKG Kubernetes Clusters to configure preKubeadmCommands
 
 Official VMware documentation: https://docs.vmware.com/en/VMware-Tanzu-Kubernetes-Grid/2.3/using-tkg/workload-clusters-cclass.html#custom-ytt
 
