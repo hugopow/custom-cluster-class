@@ -6,12 +6,12 @@ Official VMware documentation: https://docs.vmware.com/en/VMware-Tanzu-Kubernete
 # Instructions for use below
 
 cd ~/.config/tanzu/tkg/clusterclassconfigs
-
+```
 mkdir custom
 cd custom/
 mkdir overlays
 cd overlays/
-
+```
 ```
 cat custom/overlays/kernels.yaml
 #@ load("@ytt:overlay", "overlay")
