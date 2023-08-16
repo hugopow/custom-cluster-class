@@ -12,6 +12,7 @@ cd custom/
 mkdir overlays
 cd overlays/
 
+```
 cat custom/overlays/kernels.yaml
 #@ load("@ytt:overlay", "overlay")
 
@@ -45,14 +46,16 @@ spec:
           - op: add
             path: /spec/template/spec/preKubeadmCommands/-
             value: sysctl -w vm.max_map_count=262144
-
+```
+```
 cat custom/overlays/filter.yaml
+
 #@ load("@ytt:overlay", "overlay")
 
 #@overlay/match by=overlay.not_op(overlay.subset({"kind": "ClusterClass"})),expects="0+"
 ---
 #@overlay/remove
-
+```
 
 cd ~/.config/tanzu/tkg/clusterclassconfigs
 
