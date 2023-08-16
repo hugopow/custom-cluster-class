@@ -67,6 +67,7 @@ ytt -f tkg-vsphere-default-v1.1.0.yaml -f custom/ > custom_cc.yaml
 
 
 # Check the difference between the default ClusterClass and your custom one, to confirm that the changes have been applied.
+```
 diff default_cc.yaml custom_cc.yaml
 
 4c4
@@ -96,7 +97,7 @@ diff default_cc.yaml custom_cc.yaml
 >       - op: add
 >         path: /spec/template/spec/preKubeadmCommands/-
 >         value: sysctl -w vm.max_map_count=262144
-
+```
 # Install the Custom ClusterClass in the Management Cluster
 # Change to TKG Management Cluster Context
 
@@ -117,7 +118,7 @@ vi tkg-custom-spec.yaml
 # Change the line at the bottom under spec.topology.class to reference the new cluster Class
 
 Old file:
-
+```
 ---
 apiVersion: cluster.x-k8s.io/v1beta1
 kind: Cluster
@@ -139,9 +140,9 @@ spec:
       - 100.64.0.0/13
   topology:
     class: tkg-vsphere-default-v1.1.0
-
+```
 New file:
-
+```
 ---
 apiVersion: v1
 kind: Secret
@@ -172,7 +173,7 @@ spec:
       - 100.64.0.0/13
   topology:
     class: tkg-vsphere-default-v1.1.0-extended
-
+```
 
 # Create new cluster
 
