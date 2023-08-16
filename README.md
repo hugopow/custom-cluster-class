@@ -64,12 +64,12 @@ cd ~/.config/tanzu/tkg/clusterclassconfigs
 ```
 ytt -f tkg-vsphere-default-v1.1.0.yaml -f custom/overlays/filter.yaml > default_cc.yaml
 ```
-# Generate the custom ClusterClass.
+## Generate the custom ClusterClass.
 ```
 ytt -f tkg-vsphere-default-v1.1.0.yaml -f custom/ > custom_cc.yaml
 ```
 
-# Check the difference between the default ClusterClass and your custom one, to confirm that the changes have been applied.
+## Check the difference between the default ClusterClass and your custom one, to confirm that the changes have been applied.
 ```yaml
 diff default_cc.yaml custom_cc.yaml
 
@@ -101,26 +101,26 @@ diff default_cc.yaml custom_cc.yaml
 >         path: /spec/template/spec/preKubeadmCommands/-
 >         value: sysctl -w vm.max_map_count=262144
 ```
-# Install the Custom ClusterClass in the Management Cluster
-# Change to TKG Management Cluster Context
+## Install the Custom ClusterClass in the Management Cluster
+## Change to TKG Management Cluster Context
 ```
 k get clusterclasses.cluster.x-k8s.io
 ```
-# Apply the ClusterClass manifest.
+## Apply the ClusterClass manifest.
 ```
 k apply -f custom_cc.yaml
 k get clusterclass
 ```
 
-# Create a new cluster
+## Create a new cluster
 ```
 tanzu cluster create tkg-custom -f tkg-cluster-esx4.yaml --dry-run > tkg-custom-spec.yaml
 ```
-# Edit cluster spec and use the custom cluster class
+## Edit cluster spec and use the custom cluster class
 ```
 vi tkg-custom-spec.yaml
 ```
-# Change the line at the bottom under spec.topology.class to reference the new cluster Class
+## Change the line at the bottom under spec.topology.class to reference the new cluster Class
 
 Old file:
 ```yaml
@@ -180,20 +180,20 @@ spec:
     class: tkg-vsphere-default-v1.1.0-extended
 ```
 
-# Create new cluster
+## Create new cluster
 ```
 tanzu cluster create -f tkg-custom-spec.yaml
 ```
-# Add new cluster context
+## Add new cluster context
 ```
 tanzu cluster kubeconfig get tkg-custom --admin
 ```
-# Check new changes are applied
+## Check new changes are applied
 ```
 k get kubeadmconfigs tkg-custom-md-0-bootstrap-n5kj6-8jkq4 -o yaml
 ```
 
-# Log into the node and double check
+## Log into the node and double check
 ```
 ssh capv@<node-ip>
 
