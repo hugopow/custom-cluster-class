@@ -60,7 +60,7 @@ cat custom/overlays/filter.yaml
 ```
 cd ~/.config/tanzu/tkg/clusterclassconfigs
 ```
-# Use the default ClusterClass manifest to generate the base ClusterClass.
+## Use the default ClusterClass manifest to generate the base ClusterClass.
 ```
 ytt -f tkg-vsphere-default-v1.1.0.yaml -f custom/overlays/filter.yaml > default_cc.yaml
 ```
