@@ -12,7 +12,7 @@ cd custom/
 mkdir overlays
 cd overlays/
 ```
-```
+```yml
 cat custom/overlays/kernels.yaml
 #@ load("@ytt:overlay", "overlay")
 
